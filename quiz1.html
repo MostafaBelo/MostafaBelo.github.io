@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz 1</title>
+    <style>
+        .main {
+            height: 55%;
+            max-height: 25rem;
+            width: 55%;
+            max-width: 35rem;
+            background: #F7F6F6;
+            border-radius: 11px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0,0.05);
+            overflow: hidden;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .head {
+            background: #51C5DD;
+            height: 22.5%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #0A4F70;
+        }
+
+        .as {
+            width: 100%;
+            height: 77.5%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .answer {
+            overflow: hidden;
+            width: 87%;
+            height: 1.3rem;
+            background: white;
+            border-radius: 999px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0,0.05);
+            cursor: pointer;
+            transition: transform 100ms ease;
+        }
+        .answer:hover {
+            transform: scale(1.02, 1.002);
+        }
+        .answer:active {
+            background: #F7F6F6;
+            transform: scale(1.01, 1.001);
+        }
+
+        .acount {
+            background: #F04C63;
+            height: 100%;
+            padding-left: 0.4rem;
+            padding-right: 0.4rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <div class="head">Quiz</div>
+        
+        <div class="as">
+          <div class="answer"> <span class="acount">1-</span> <span class="acontent">hey</span> </div>
+          
+          <div class="answer"> <span class="acount">2-</span> <span class="acontent">wow</span> </div>
+      
+          <div class="answer"> <span class="acount">3-</span> <span class="acontent">bye</span> </div>
+          
+          <div class="answer"> <span class="acount">4-</span> <span class="acontent">die</span> </div>
+        </div>
+      </div>
+</body>
+</html>
