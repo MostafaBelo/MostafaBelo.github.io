@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colorer</title>
+    <style>
+        .color {
+            border: solid 2px black;
+            height: 500px;
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; justify-content: center; align-items: center; height: 50px; gap: 1rem;">
+        <input oninput="col_change();" style="border-radius: 999px; padding: 2px; text-align: center;" type="text" id="main-color" placeholder="#color" maxlength="6">
+        <button onclick="randomize_col();" id="rand">Randomize</button>
+    </div>
+
+    <div id="res" style="display: flex; justify-content: space-between; gap: 2%;">
+        <div class="color"></div>
+        <div class="color"></div>
+        <div class="color"></div>
+        <div class="color"></div>
+        <div class="color"></div>
+        <div class="color"></div>
+    </div>
+
+    <script>
+        let main = document.getElementById('main-color');
+        let res = document.getElementById('res')
+
+        function col_change () {
+            if (main.value.length == 6) {
+                let c = [];
+                let cr = main.value.substr(0, 2);
+                let cg = main.value.substr(2, 2);
+                let cb = main.value.substr(4, 2);
+                c.push(cr+cg+cb);
+                c.push(cr+cb+cg);
+                c.push(cg+cr+cb);
+                c.push(cg+cb+cr);
+                c.push(cb+cr+cg);
+                c.push(cb+cg+cr);
+
+                for (let i = 0; i < res.children.length; i++) {
+                    res.children[i].style = 'background: #'+ c[i] +';';
+                    
+                }
+            }
+        }
+
+        function randomize_col () {
+            let end = '';
+            for (let i = 0; i < 6; i++) {
+                end += ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'][Math.floor(Math.random()*16)];
+            }
+            main.value = end;
+            col_change();
+        }
+    </script>
+</body>
+</html>
