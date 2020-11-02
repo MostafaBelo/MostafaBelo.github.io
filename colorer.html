@@ -6,9 +6,15 @@
     <title>Colorer</title>
     <style>
         .color {
+            font-weight: bold;
+            font-size: 1.3rem;
             border: solid 2px black;
             height: 500px;
             flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -46,7 +52,7 @@
 
                 for (let i = 0; i < res.children.length; i++) {
                     res.children[i].style = 'background: #'+ c[i] +';';
-                    
+                    res.children[i].innerHTML = '#'+c[i];
                 }
             }
         }
@@ -58,6 +64,14 @@
             }
             main.value = end;
             col_change();
+        }
+
+        for (let i = 0; i < res.children.length; i++) {
+            res.children[i].onclick = () => {
+                navigator.clipboard.writeText(res.children[i].innerHTML.substr(1, 6)).then(() => {
+                    alert('Color Copied to Clipboard!')
+                })
+            }
         }
     </script>
 </body>
