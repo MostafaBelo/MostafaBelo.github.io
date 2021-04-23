@@ -1,0 +1,135 @@
+* {
+    padding: 0;
+    margin: 0;
+    user-select: none;
+}
+
+body {
+    color: #edf2f4;
+    font: bold;
+    font-family: sans-serif;
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #2b2d42;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+
+.main {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}
+
+.board-css {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    width: 30rem;
+}
+.movespgn {
+    width: 100%;
+}
+
+.back {
+    background-color: white;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 5rem;
+    border-radius: 11px;
+    margin-top: 0.3rem;
+    cursor: pointer;
+    transition: all 100ms ease;
+}
+.back:hover {
+    transform: scale(1.05, 1.05);
+}
+.back:active {
+    transform: scale(1.03, 1.03);
+}
+
+.out {
+    position: fixed;
+    top: 0.2rem;
+    left: 0.2rem;
+}
+
+.moves {
+    background-color: #8d99ae;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 11px;
+    width: 25.3rem;
+    height: 40rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.move {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem;
+    width: 100%;
+    border-bottom: 2px solid black;
+    transition: all 100ms ease;
+    cursor: pointer;
+}
+.move:hover {
+    background-color: #edf2f4;
+    color: #3a86ff;
+    transform: scale(1.05, 1.05);
+}
+.move:active {
+    background-color: #edf2f4;
+    color: #3a86ff;
+    transform: scale(1.03, 1.03);
+}
+
+.score-main {
+    display: flex;
+    box-sizing: border-box;
+    justify-content: space-between;
+    overflow: hidden;
+    height: 100%;
+    width: 15rem;
+    border-radius: 8px;
+    border: 2px solid black;
+}
+.score-white {
+    background-color: #f8f9fa;
+    color: black;
+}
+.score-draw {
+    background-color: #6c757d;
+    color: whitesmoke;
+}
+.score-black {
+    background-color: #212529;
+    color: white;
+}
+
+.score {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 30%;
+    overflow: hidden;
+}
