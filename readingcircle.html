@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Circle</title>
+    <style>
+        *{
+            font-family: sans-serif;
+            color: #f1faee;
+            font-weight: bold;
+        }
+
+        .all{
+            width: 100%;
+            height: 100%;
+            background-color: green;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: #e63946;
+            width: 30rem;
+            height: 20rem;
+            border-radius: 11px;
+            display: flex;
+            justify-content: center;
+            align-items : center;
+            font-size: 1.8rem;
+            position: relative;
+        }
+
+        .q{
+            color:#1d3557;
+            margin: 0 0.5rem;
+            text-align: center;
+        }
+
+        .next{
+            position: absolute;
+            bottom: 0.2rem;
+            right: 0.3rem;
+            background: #457b9d;
+            border-radius:11px;
+            padding: 0.1rem 0.3rem;
+            user-select: none;
+        }
+        .prev{
+            position: absolute;
+            bottom: 0.2rem;
+            left: 0.3rem;
+            background: #457b9d;
+            border-radius:11px;
+            padding: 0.1rem 0.3rem;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="all">
+        <div class="container">
+            <div id="q" class="q">Hello</div>
+            <div id="prev" class="prev">Previous</div>
+            <div id="next" class="next">Next</div>
+        </div>
+    </div>
+
+    <script>
+        let q = document.getElementById("q");
+        let next = document.getElementById("next");
+        let prev = document.getElementById("prev");
+        let qs = ["Why do you think companies are afraid to use social media marketing?", "What is the goal of the seven step process?", "How did creamer compare SAT to social media?", "Why do you think sucess on social media might not relate to success of the bussiness as happened with Peter Andre?", "What are cases of businesses listening to their audiences through social media and bringing in influencers for promotional content?"];
+        let index = 0;
+
+        q.innerHTML = qs[0];
+
+        next.onclick = () => {
+            if (index==qs.length-1) {
+                index=-1;
+            }
+            q.innerHTML = qs[++index];
+        };
+        
+        prev.onclick = () => {
+            if (index==0){
+                index=qs.length;
+            }
+            q.innerHTML = qs[--index];
+        };
+    </script>
+</body>
+</html>
