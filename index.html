@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Presentation</title>
+
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <div id="cover" class="cover cover-active">
+        <div id="btn-start" class="btn-start">Start Journey</div>
+    </div>
+
+    <div class="nav">
+        <span id="nav-magic" class="nav-item">Magic</span>
+        <span id="nav-types" class="nav-item">Typology</span>
+        <span id="nav-social" class="nav-item">Social Influence</span>
+        <span id="nav-altered" class="nav-item">Altered States</span>
+        <span id="nav-inner" class="nav-item">Inner Voices</span>
+        <span id="nav-shadow" class="nav-item">Shadow</span>
+    </div>
+
+    <div class="contents">
+
+        <div class="content content-inactive">
+            <!-- magic -->
+            <img id="coin-img" src="./coin.png" alt="coin-img" class="coin">
+
+        </div>
+
+        <div class="content content-inactive" style="justify-content: flex-start;">
+            <!-- types -->
+            <span class="title">Tests</span>
+            <div class="tests">
+                <p>MBTI
+                    <br><br>
+                    INTP : The Thinker
+                    <br>
+                    - Utilises Logic
+                    <br><br>
+                    <img src="./mbti.png">
+                    <br>
+                    <span style="font-size: 0.3rem; opacity: 40%;">https://www.16personalities.com/ar/%D8%A3%D9%86%D9%88%D8%A7%D8%B9-%D8%A7%D9%84%D8%B4%D8%AE%D8%B5%D9%8A%D8%A9</span>
+                </p>
+                
+                <p>
+                    Individualogist
+                    <br><br>
+                    Logician
+                    <br>
+                    Struggles with Emotions
+                    <br><br>
+                    <img src="./emotions.png">
+                    <br>
+                    <span style="font-size: 0.4rem; opacity: 40%;">https://www.dreamstime.com/illustration/emotions.html</span>
+                </p>
+                
+                <p>
+                    Forest
+                    <br><br>
+                    - Most Important Preson
+                </p>
+                
+                <p>
+                    Order Of Importance
+                    <br><br>
+                    - Top is Career
+                    <br>
+                    - Second is Money
+                </p>
+            </div>
+        </div>
+        
+        <div class="content content-inactive" style="justify-content: flex-start;">
+            <!-- social -->
+            <span class="title">Enviornmental Influence</span>
+            
+            <div class="socials">
+                <p>My Family's moto is "if a product produced is not perfect then it is a failure"</p>
+                <div style="display: flex; justify-content: center; height: 500px; width: 100%;">
+                <p>
+                    <img src="./expectations.png" style="width: 700px">
+                    <br>
+                    <span style="font-size: 0.4rem; opacity: 40%;">https://www.pinclipart.com/pindetail/hwwoiR_picture-high-expectations-clipart-png-download/</span>
+                </p>
+                <p>
+                    <img src="./cup.png">
+                    <br>
+                    <span style="font-size: 0.4rem; opacity: 40%;">https://www.dreamstime.com/vecrtor-set-icons-glasses-water-animation-frames-vecrtor-set-icons-glasses-water-animation-frames-five-frames-image132793394</span>
+                </p>
+                <p>
+                    <img src="./expectations_crumble.png" style="height: 463px">
+                    <br>
+                    <span style="font-size: 0.4rem; opacity: 40%;">https://www.istockphoto.com/search/2/image?mediatype=illustration&phrase=high+expectations</span>
+                </p>
+            </div>
+            </div>
+        </div>
+
+        <div class="content content-inactive" style="justify-content: flex-start;">
+            <!-- altered -->
+            <span class="title">Happiness is from within</span>
+
+            <div style="display: flex; justify-content: center; height: 500px; width: 100%;">
+                <p>
+                    <img src="./cup.png">
+                    <br>
+                    <span style="font-size: 0.4rem; opacity: 40%;">https://www.dreamstime.com/vecrtor-set-icons-glasses-water-animation-frames-vecrtor-set-icons-glasses-water-animation-frames-five-frames-image132793394</span>
+                </p>
+                <p>
+                    <img src="./meditation.png" style="height: 463px">
+                    <br>
+                    <span style="font-size: 0.4rem; opacity: 40%;">http://clipart-library.com/meditation-png.html</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="content content-inactive" style="justify-content: flex-start;">
+            <!-- inner -->
+            <span class="title">Inner Voices</span>
+
+            <div style="display: flex; justify-content: center; height: 500px; width: 100%;">
+                <p>
+                    <img src="./shh.png" style="height: 463px">
+                    <br>
+                    <span style="font-size: 0.4rem; opacity: 40%;">https://www.istockphoto.com/search/2/image?mediatype=illustration&phrase=shhh</span>
+                </p>
+            </div>
+        </div>
+        
+        <div class="content content-inactive" style="justify-content: flex-start; background: #333;">
+            <!-- shadow -->
+            <span class="title" style="color: whitesmoke;">Shadow</span>
+            <div style="display: flex; justify-content: center; height: 500px; width: 100%;">
+                <p>
+                    <img src="./arrogance.png" style="height: 463px">
+                    <br>
+                    <span style="font-size: 0.4rem; color: whitesmoke; opacity: 40%;">https://www.istockphoto.com/search/2/image?mediatype=illustration&phrase=arrogance</span>
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let btns = document.getElementsByClassName("nav-item");
+        let pages = document.getElementsByClassName("content");
+        let animation_count = 0;
+        let current_page = 0;
+        let timer;
+
+        let pageChange = (i) => {
+            animation_count = 0;
+            if (timer)
+                clearInterval(timer);
+            current_page = i;
+            for (let j = 0; j < pages.length; j++) {
+                pages[j].classList.remove("content-active");
+                pages[j].classList.add("content-inactive");
+            }
+            pages[i].classList.add("content-active");
+            pages[i].classList.remove("content-inactive");
+
+            if (i == 0) {
+                document.getElementById("coin-img").style = "";
+            }
+        }
+
+        let btnClick = (i) => {
+            for (let j = 0; j < btns.length; j++) {
+                    const element = btns[j];
+                    element.classList.remove("nav-active");
+                }
+                
+            btns[i].classList.add("nav-active");
+            pageChange(i);
+        }
+
+        let pageClick = (i) => {
+            if (i == 0) {
+                if (animation_count == 0) {
+                    let coin = document.getElementById('coin-img');
+                    let x = 0;
+                    timer = setInterval(() => {
+                        if (x == 2000 && timer) {
+                            clearInterval(timer);
+                        }
+                        coin.style = "transform: translate(0, " + x + "px);";
+                        x+=10;
+                    }, 10)
+                }
+            } else if (i == 1) 
+            {
+
+            }
+            animation_count++;
+        }
+
+        for (let i = 0; i < btns.length; i++) {
+            const element = btns[i];
+            element.onclick = () => {btnClick(i)};
+        }
+
+        for (let i = 0; i < pages.length; i++) 
+        {
+            const element = pages[i];
+            element.onclick = () => {pageClick(i)};
+        }
+
+        btnClick(0); // intialize with first page
+
+        let btn_start = document.getElementById("btn-start");
+        let cover = document.getElementById("cover");
+        btn_start.onclick = () => {
+            cover.classList.add("cover-inactive");
+            cover.classList.remove("cover-active");
+        }
+    </script>
+</body>
+</html>
