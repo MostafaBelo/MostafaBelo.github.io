@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vocab Quiz</title>
+        <style>
+            .main {
+                height: 55%;
+                max-height: 25rem;
+                width: 55%;
+                max-width: 35rem;
+                background: #f7f6f6;
+                border-radius: 11px;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                overflow: hidden;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .head {
+                background: #51c5dd;
+                height: 22.5%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 2.5em;
+                font-weight: bold;
+                color: #0a4f70;
+            }
+
+            .tip {
+                color: black;
+                border-radius: 999px;
+                font-size: 1.1rem;
+                font-weight: bold;
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 1.2rem;
+                height: 1.2rem;
+                margin-top: 0.5rem;
+                margin-right: 0.5rem;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+                overflow: hidden;
+                z-index: 1;
+                transition: all ease-out 200ms;
+            }
+
+            .tip:hover {
+                width: 15rem;
+            }
+
+            .tip .content {
+                background: white;
+                border-radius: 999px;
+                border: 1px solid black;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                position: absolute;
+                top: 50%;
+                left: 0;
+                transform: translate(0, -50%);
+                width: 15rem;
+                height: 0.9rem;
+                font-size: 0.8rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: -1;
+            }
+
+            .tip .cover {
+                background: white;
+                border-radius: 999px;
+                border: 1px solid black;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                height: 1.2rem;
+                width: 1.2rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-sizing: border-box;
+                cursor: pointer;
+            }
+
+            .question {
+                height: 15%;
+                margin-top: 2%;
+                font-size: 1.2rem;
+                font-weight: bold;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .as {
+                width: 100%;
+                height: 60.5%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .answer {
+                overflow: hidden;
+                width: 87%;
+                height: 1.3rem;
+                background: white;
+                border-radius: 999px;
+                font-size: 1.2rem;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                gap: 0.3rem;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                cursor: pointer;
+                transition: transform 100ms ease;
+            }
+            .answer:hover {
+                transform: scale(1.02, 1.002);
+            }
+            .answer:active {
+                background: #f7f6f6;
+                transform: scale(1.01, 1.001);
+            }
+
+            .acount {
+                background: #f04c63;
+                height: 100%;
+                padding-left: 0.4rem;
+                padding-right: 0.4rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .correct {
+                background: #51ddc5;
+            }
+            .wrong {
+                background: #f04c63;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main">
+            <div class="head">
+                Quiz
+                <div class="tip">
+                    <div class="content">Answers are in random order!</div>
+                    <div class="cover">?</div>
+                </div>
+            </div>
+
+            <div class="question" id="question">Riddle me this?</div>
+
+            <div class="as">
+                <div class="answer">
+                    <span class="acount">1-</span>
+                    <span class="acontent" id="answer_1">Answer 1</span>
+                </div>
+
+                <div class="answer">
+                    <span class="acount">2-</span>
+                    <span class="acontent" id="answer_2">Answer 2</span>
+                </div>
+
+                <div class="answer">
+                    <span class="acount">3-</span>
+                    <span class="acontent" id="answer_3">Answer 3</span>
+                </div>
+
+                <div class="answer">
+                    <span class="acount">4-</span>
+                    <span class="acontent" id="answer_4">Answer 4</span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let q = document.getElementById("question");
+            let a = document.getElementsByClassName("answer");
+            // let a = document.getElementsByClassName("acontent");
+            let q_index;
+            let a_index;
+
+            let data = `Post Hoc : B happened after A, so A caused B
+            Cum Hoc : A and B usually happen together, so A causes B, conncurent with cause
+            Hasty Generalization : assuming based on small sample size
+            False Dilemma : oversimplifying the problem to either-or with one option being out of question
+            Circular Reasoning : the premise and conclusion are the same
+            Red Herring : diverting attention from the main argument
+            False Analogy : A and B are alike in minor ways, then they are alike in major ways
+            Appeal to Ignorance : an assertion is true when not proven false or false when unproven true
+            Non sequitur : doesn't follow from previously mentioned
+            Loaded question : a question with a false or questionable presupposition
+            Guilt by Association : Associating cause or opinion with an unrealted evil
+            Ad Hominem : Personal Attack
+            You too : Claim is attacked cuz it is inconsistent with their actions
+            Appeal to popularity : claim is true cuz many ppl agree with it
+            Appeal to Authority : person said so, and they aren't in position to say so
+            Appeal to Pity : arguer try to get ppl to accept conc by making them feel sorry
+            Appeal to fear : arguer gets acceptance via fear in ppl
+            Slippery Slope : chain reaction ending in dire consequence/exageration`;
+
+            let arr = data.split("\n");
+            for (let i = 0; i < arr.length; i++) {
+                arr[i] = arr[i].split(" : ");
+            }
+
+            let randomQuestion = () => {
+                q_index = Math.floor(Math.random() * arr.length);
+                a_index = Math.floor(Math.random() * 4);
+
+                q.innerHTML = arr[q_index][1];
+                let ns = [q_index];
+                for (let i = 0; i < a.length; i++) {
+                    if (i == a_index)
+                        a[i].getElementsByClassName("acontent")[0].innerHTML =
+                            arr[q_index][0];
+                    else {
+                        let n = Math.floor(Math.random() * arr.length);
+                        while (ns.indexOf(n) != -1)
+                            n = Math.floor(Math.random() * arr.length);
+                        a[i].getElementsByClassName("acontent")[0].innerHTML =
+                            arr[n][0];
+                        ns.push(n);
+                    }
+                }
+            };
+
+            let checkAnswer = (i) => {
+                if (a_index == i) {
+                    a[i].classList.add("correct");
+                } else {
+                    a[i].classList.add("wrong");
+                    a[a_index].classList.add("correct");
+                }
+                setTimeout(() => {
+                    a[i].classList.remove("correct");
+                    a[i].classList.remove("wrong");
+                    a[a_index].classList.remove("correct");
+                    randomQuestion();
+                }, 1000);
+            };
+
+            for (let i = 0; i < a.length; i++) {
+                a[i].onclick = () => {
+                    checkAnswer(i);
+                };
+            }
+
+            randomQuestion();
+        </script>
+    </body>
+</html>
