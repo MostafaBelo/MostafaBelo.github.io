@@ -1,0 +1,92 @@
+[
+    {
+        "Title": "Annihilation of Defence",
+        "Basic_Start": 1,
+        "Basic_End": 88,
+        "Intermediate_Start": 89,
+        "Intermediate_End": 190,
+        "Advanced_Start": 191,
+        "Advanced_End": 288
+    },
+    {
+        "Title": "Blockade",
+        "Basic_Start": 289,
+        "Basic_End": 327,
+        "Intermediate_Start": 328,
+        "Intermediate_End": 345,
+        "Advanced_Start": 346,
+        "Advanced_End": 351
+    },
+    {
+        "Title": "Clearance",
+        "Basic_Start": 352,
+        "Basic_End": 538,
+        "Intermediate_Start": 539,
+        "Intermediate_End": 728,
+        "Advanced_Start": 729,
+        "Advanced_End": 918
+    },
+    {
+        "Title": "Deflection",
+        "Basic_Start": 919,
+        "Basic_End": 1083,
+        "Intermediate_Start": 1084,
+        "Intermediate_End": 1165,
+        "Advanced_Start": 1166,
+        "Advanced_End": 1237
+    },
+    {
+        "Title": "Discovered Attack",
+        "Basic_Start": 1238,
+        "Basic_End": 1300,
+        "Intermediate_Start": 1301,
+        "Intermediate_End": 1352,
+        "Advanced_Start": 1353,
+        "Advanced_End": 1387
+    },
+    {
+        "Title": "Pinning",
+        "Basic_Start": 1388,
+        "Basic_End": 1439,
+        "Intermediate_Start": 1440,
+        "Intermediate_End": 1469,
+        "Advanced_Start": 1470,
+        "Advanced_End": 1499
+    },
+    {
+        "Title": "Demolition of Pawn Structure",
+        "Basic_Start": 1500,
+        "Basic_End": 1652,
+        "Intermediate_Start": 1653,
+        "Intermediate_End": 1870,
+        "Advanced_Start": 1871,
+        "Advanced_End": 2116
+    },
+    {
+        "Title": "Decoy",
+        "Basic_Start": 2117,
+        "Basic_End": 2384,
+        "Intermediate_Start": 2385,
+        "Intermediate_End": 2628,
+        "Advanced_Start": 2629,
+        "Advanced_End": 2862
+    },
+    {
+        "Title": "Interference",
+        "Basic_Start": 2863,
+        "Basic_End": 2909,
+        "Intermediate_Start": 2910,
+        "Intermediate_End": 2942,
+        "Advanced_Start": 2943,
+        "Advanced_End": 2959
+    },
+    {
+        "Title": "Double Attack",
+        "Basic_Start": 2960,
+        "Basic_End": 2988,
+        "Intermediate_Start": 2989,
+        "Intermediate_End": 2992,
+        "Advanced_Start": 2993,
+        "Advanced_End": 3001
+    }
+]
