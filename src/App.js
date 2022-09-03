@@ -1,5 +1,5 @@
 import classes from "./App.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { isMobile } from "react-device-detect";
 
@@ -24,6 +24,10 @@ function App() {
 
     const [isSideOpen, SetIsSideOpen] = useState(false);
     const [currentMenu, setCurrentMenu] = useState([-1, -1]);
+
+    const [solvedPuzzles, setSolvedPuzzles] = useState(
+        JSON.parse(localStorage.getItem("SolvedPuzzles")) || []
+    );
 
     // let IsPromotion = (from, to, piece) => {
     //     if (piece === "wP" || piece === "bP") {
@@ -76,7 +80,15 @@ function App() {
                 setTimeout(() => {
                     setMoveStatus((prev) => {
                         if (prev !== 2) return 0;
-                        else return 2;
+                        else {
+                            setSolvedPuzzles((prev) => {
+                                if (!prev.includes(currentPuzzle)) {
+                                    prev = [...prev, currentPuzzle];
+                                }
+                                return prev;
+                            });
+                            return 2;
+                        }
                     });
                 }, 500);
             }, 200);
@@ -126,12 +138,10 @@ function App() {
     };
 
     let OpenSideBar = () => {
-        console.log("opening");
         SetIsSideOpen(true);
     };
 
     let CloseSideBar = () => {
-        console.log("closing");
         setCurrentMenu([-1, -1]);
         SetIsSideOpen(false);
     };
@@ -191,6 +201,7 @@ function App() {
                     className={`
       ${classes.MenuCard}
       ${classes.PuzzleCard}
+      ${solvedPuzzles.includes(i - 1) && classes.PuzzleSolvedCard}
       `}
                     onClick={() => {
                         changePuzzle(i);
@@ -226,6 +237,19 @@ function App() {
         ...config,
     });
 
+    // useEffect(() => {
+    //     console.log("loading");
+    //     const solves = JSON.parse(localStorage.getItem("SolvedPuzzles"));
+    //     if (solves) setSolvedPuzzles(solves);
+
+    //     console.log(solves);
+    // }, []);
+
+    useEffect(() => {
+        let data = JSON.stringify(solvedPuzzles);
+        localStorage.setItem("SolvedPuzzles", data);
+    }, [solvedPuzzles]);
+
     return (
         <div className={classes.App}>
             <div className={classes.swipearea} {...swiperighthandler}></div>
@@ -234,6 +258,7 @@ function App() {
                     !isSideOpen && classes.overlayHidden
                 }`}
                 onClick={CloseSideBar}
+                {...swipelefthandler}
             >
                 <div
                     className={`
@@ -248,7 +273,7 @@ function App() {
                     onClick={(e) => {
                         e.stopPropagation();
                     }}
-                    {...swipelefthandler}
+                    // {...swipelefthandler}
                 >
                     {cards}
                 </div>
@@ -261,6 +286,9 @@ function App() {
                 boardOrientation={puzzles[currentPuzzle].turn}
                 customArrows={hints}
                 boardWidth={isMobile ? 350 : 560}
+                onSquareClick={(s) => {
+                    console.log(s, typeof s);
+                }}
             />
             <div className={classes.msg}>
                 <div

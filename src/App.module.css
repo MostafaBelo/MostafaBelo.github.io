@@ -200,6 +200,10 @@
     height: 2rem;
 }
 
+.PuzzleSolvedCard {
+    background-color: #06d6a0;
+}
+
 .ContentCard {
     width: 90%;
     /* height: ; */
