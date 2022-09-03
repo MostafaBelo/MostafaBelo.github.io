@@ -126,19 +126,19 @@ function App() {
     };
 
     let OpenSideBar = () => {
+        console.log("opening");
         SetIsSideOpen(true);
     };
 
     let CloseSideBar = () => {
+        console.log("closing");
         setCurrentMenu([-1, -1]);
         SetIsSideOpen(false);
     };
 
     let cards = [];
 
-    console.log("reload");
     if (currentMenu[0] === -1) {
-        console.log("reload 1");
         for (let i = 0; i < contents.length; i++) {
             cards.push(
                 <div
@@ -160,7 +160,6 @@ function App() {
             );
         }
     } else if (currentMenu[1] === -1) {
-        console.log("reload 2");
         for (let i = 0; i < 3; i++) {
             cards.push(
                 <div
@@ -182,7 +181,6 @@ function App() {
             );
         }
     } else {
-        console.log("reload 3");
         let start =
             contents[currentMenu[0]][difficulties[currentMenu[1]] + "_Start"];
         let end =
@@ -205,10 +203,6 @@ function App() {
         }
     }
 
-    let onSwipe = (e) => {
-        CloseSideBar();
-    };
-
     const config = {
         delta: 10, // min distance(px) before a swipe starts. *See Notes*
         preventScrollOnSwipe: false, // prevents scroll during swipe (*See Details*)
@@ -219,13 +213,22 @@ function App() {
         touchEventOptions: { passive: true }, // options for touch listeners (*See Details*)
     };
 
-    const swipehandler = useSwipeable({
-        onSwipedLeft: onSwipe,
+    const swipelefthandler = useSwipeable({
+        onSwipedLeft: (e) => {
+            CloseSideBar();
+        },
+        ...config,
+    });
+    const swiperighthandler = useSwipeable({
+        onSwipedRight: (e) => {
+            OpenSideBar();
+        },
         ...config,
     });
 
     return (
         <div className={classes.App}>
+            <div className={classes.swipearea} {...swiperighthandler}></div>
             <div
                 className={`${classes.overlay} ${
                     !isSideOpen && classes.overlayHidden
@@ -245,7 +248,7 @@ function App() {
                     onClick={(e) => {
                         e.stopPropagation();
                     }}
-                    {...swipehandler}
+                    {...swipelefthandler}
                 >
                     {cards}
                 </div>
