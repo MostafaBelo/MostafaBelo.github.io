@@ -7,6 +7,7 @@ import menuIcon from "./menu.svg";
 
 import contents from "./Contents.json";
 import puzzles from "./Puzzles(main).json";
+import { useSwipeable } from "react-swipeable";
 
 let currentMove = 0;
 let difficulties = ["Basic", "Intermediate", "Advanced"];
@@ -202,6 +203,25 @@ function App() {
         }
     }
 
+    let onSwipe = (e) => {
+        CloseSideBar();
+    };
+
+    const config = {
+        delta: 10, // min distance(px) before a swipe starts. *See Notes*
+        preventScrollOnSwipe: false, // prevents scroll during swipe (*See Details*)
+        trackTouch: true, // track touch input
+        trackMouse: false, // track mouse input
+        rotationAngle: 0, // set a rotation angle
+        swipeDuration: Infinity, // allowable duration of a swipe (ms). *See Notes*
+        touchEventOptions: { passive: true }, // options for touch listeners (*See Details*)
+    };
+
+    const swipehandler = useSwipeable({
+        onSwipedLeft: onSwipe,
+        ...config,
+    });
+
     return (
         <div className={classes.App}>
             <div
@@ -223,6 +243,7 @@ function App() {
                     onClick={(e) => {
                         e.stopPropagation();
                     }}
+                    {...swipehandler}
                 >
                     {cards}
                 </div>
@@ -234,6 +255,7 @@ function App() {
                 onPieceDrop={PieceMoved}
                 boardOrientation={puzzles[currentPuzzle].turn}
                 customArrows={hints}
+                boardWidth={350}
             />
             <div className={classes.msg}>
                 <div

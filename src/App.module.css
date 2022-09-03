@@ -2,7 +2,7 @@
     text-align: center;
     display: flex;
     flex-direction: column;
-    /* justify-content: center; */
+    justify-content: space-between;
     align-items: center;
 
     position: fixed;
@@ -15,6 +15,7 @@
     background-color: #353535;
 
     padding: 1rem;
+    padding-top: 4rem;
     box-sizing: border-box;
 
     gap: 1.5rem;
@@ -98,7 +99,7 @@
     top: 0;
     background-color: #0f4c5c;
     height: 100%;
-    width: 25rem;
+    width: 20rem;
 
     padding: 1rem;
     padding-top: 4rem;
@@ -187,7 +188,7 @@
 }
 
 .ContentCard {
-    width: 20rem;
+    width: 90%;
     /* height: ; */
 }
 
