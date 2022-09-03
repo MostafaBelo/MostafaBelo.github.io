@@ -1,5 +1,8 @@
 import classes from "./App.module.css";
 import { useState } from "react";
+import { useSwipeable } from "react-swipeable";
+import { isMobile } from "react-device-detect";
+
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 
@@ -7,7 +10,6 @@ import menuIcon from "./menu.svg";
 
 import contents from "./Contents.json";
 import puzzles from "./Puzzles(main).json";
-import { useSwipeable } from "react-swipeable";
 
 let currentMove = 0;
 let difficulties = ["Basic", "Intermediate", "Advanced"];
@@ -255,7 +257,7 @@ function App() {
                 onPieceDrop={PieceMoved}
                 boardOrientation={puzzles[currentPuzzle].turn}
                 customArrows={hints}
-                boardWidth={350}
+                boardWidth={isMobile ? 350 : 560}
             />
             <div className={classes.msg}>
                 <div
