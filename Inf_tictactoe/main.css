@@ -1,0 +1,83 @@
+.main {
+	position: fixed;
+	top: 0;
+	left: 0;
+
+	width: 100%;
+	height: 100%;
+
+	background-color: #072a40;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+.board-main {
+	border: #07f3fb 10px solid;
+	border-radius: 20px;
+
+	width: 50%;
+	max-width: 700px;
+
+	aspect-ratio: 1;
+}
+
+.board {
+	width: 100%;
+	height: 100%;
+
+	border-collapse: collapse;
+	border-style: hidden;
+}
+
+.row {
+	width: 100%;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.cell {
+	position: relative;
+
+	width: 100%;
+	aspect-ratio: 1;
+
+	text-align: center;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	box-sizing: border-box;
+
+	border: #07f3fb 8px solid;
+}
+.cell::after {
+	content: "";
+
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+
+	background-size: 80%;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+
+.x::after {
+	background-image: url("x.png");
+}
+
+.o::after {
+	background-image: url("o.png");
+}
+
+.rm::after {
+	opacity: 0.5;
+}
