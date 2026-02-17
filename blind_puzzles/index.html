@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Blindfold Chess — Tactics</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--bg: #0d0f0e;
+				--surface: #151815;
+				--border: #2a2e2a;
+				--cream: #e8e0cc;
+				--gold: #c9a84c;
+				--gold-dim: #7a6230;
+				--white-sq: #f0d9b5;
+				--black-sq: #b58863;
+				--correct: #4caf70;
+				--wrong: #cf4a3c;
+				--text-dim: #6b7268;
+				--radius: 10px;
+			}
+
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+				user-select: none;
+				-webkit-user-select: none;
+			}
+
+			body {
+				background: var(--bg);
+				color: var(--cream);
+				font-family: "JetBrains Mono", monospace;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: flex-start;
+				padding: 32px 16px 48px;
+				overflow-x: hidden;
+			}
+
+			body::before {
+				content: "";
+				position: fixed;
+				inset: 0;
+				background-image: repeating-conic-gradient(
+					#1a1d1a 0% 25%,
+					#0d0f0e 0% 50%
+				);
+				background-size: 48px 48px;
+				opacity: 0.35;
+				pointer-events: none;
+				z-index: 0;
+			}
+
+			.wrapper {
+				position: relative;
+				z-index: 1;
+				width: 100%;
+				max-width: 520px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 24px;
+			}
+
+			/* Header */
+			header {
+				text-align: center;
+			}
+			header h1 {
+				font-family: "Playfair Display", serif;
+				font-size: clamp(1.6rem, 5vw, 2.2rem);
+				font-weight: 900;
+				letter-spacing: 0.04em;
+				color: var(--cream);
+				line-height: 1;
+			}
+			header h1 span {
+				color: var(--gold);
+			}
+			header p {
+				margin-top: 6px;
+				font-size: 0.7rem;
+				color: var(--text-dim);
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+			}
+
+			/* Progress */
+			.progress-row {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			.progress-label {
+				font-size: 0.6rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--text-dim);
+			}
+			.progress-count {
+				font-size: 0.75rem;
+				color: var(--gold);
+				font-weight: 600;
+			}
+
+			/* Main card */
+			.tactic-card {
+				width: 100%;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				padding: 32px 28px 28px;
+				display: flex;
+				flex-direction: column;
+				gap: 24px;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.card-section-label {
+				font-size: 0.58rem;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: var(--text-dim);
+				margin-bottom: 12px;
+			}
+
+			/* ── Piece chips ── */
+			.piece-grid {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+
+			.piece-chip {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 4px;
+				padding: 9px 11px 8px;
+				border-radius: 8px;
+				border: 1px solid var(--border);
+				min-width: 54px;
+			}
+
+			/* The unicode glyph */
+			.piece-chip .piece-symbol {
+				font-size: 1.6rem;
+				line-height: 1;
+			}
+
+			/* The square label beneath */
+			.piece-chip .piece-square {
+				font-size: 0.6rem;
+				font-family: "JetBrains Mono", monospace;
+				letter-spacing: 0.08em;
+				font-weight: 600;
+			}
+
+			/* White pieces — hollow unicode glyphs, bright border accent */
+			.piece-chip.white-piece {
+				background: #1e2120;
+				border-color: #3d4a3d;
+				box-shadow: 0 0 0 1px #2a352a inset;
+			}
+			.piece-chip.white-piece .piece-symbol {
+				color: var(--white-sq);
+				text-shadow: 0 1px 6px rgba(240, 217, 181, 0.25);
+			}
+			.piece-chip.white-piece .piece-square {
+				color: #9da899;
+			}
+
+			/* Black pieces — filled unicode glyphs, warm amber border */
+			.piece-chip.black-piece {
+				background: #1c1916;
+				border-color: #3d2e22;
+				box-shadow: 0 0 0 1px #2a2018 inset;
+			}
+			.piece-chip.black-piece .piece-symbol {
+				color: var(--black-sq);
+				text-shadow: 0 1px 6px rgba(181, 136, 99, 0.3);
+			}
+			.piece-chip.black-piece .piece-square {
+				color: #8a7060;
+			}
+
+			/* Divider */
+			.divider {
+				width: 100%;
+				height: 1px;
+				background: var(--border);
+			}
+
+			/* Answer section */
+			.answer-section {
+				display: flex;
+				flex-direction: column;
+				gap: 14px;
+			}
+
+			.move-sequence {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+				min-height: 38px;
+				align-items: center;
+			}
+			.move-chip {
+				padding: 6px 14px;
+				border-radius: 6px;
+				background: #1a1f1a;
+				border: 1px solid var(--gold-dim);
+				color: var(--gold);
+				font-size: 0.82rem;
+				font-weight: 600;
+				letter-spacing: 0.05em;
+				opacity: 0;
+				transform: translateY(6px);
+				transition:
+					opacity 0.25s ease,
+					transform 0.25s ease;
+			}
+			.move-chip.revealed {
+				opacity: 1;
+				transform: translateY(0);
+			}
+			.move-chip:nth-child(2) {
+				transition-delay: 0.06s;
+			}
+			.move-chip:nth-child(3) {
+				transition-delay: 0.12s;
+			}
+			.move-chip:nth-child(4) {
+				transition-delay: 0.18s;
+			}
+			.move-chip:nth-child(5) {
+				transition-delay: 0.24s;
+			}
+			.move-chip:nth-child(6) {
+				transition-delay: 0.3s;
+			}
+			.move-chip:nth-child(7) {
+				transition-delay: 0.36s;
+			}
+
+			.hidden-placeholder {
+				font-size: 0.7rem;
+				color: var(--text-dim);
+				letter-spacing: 0.08em;
+				font-style: italic;
+			}
+
+			/* Buttons */
+			.btn-row {
+				display: flex;
+				gap: 12px;
+				width: 100%;
+			}
+			.btn-primary {
+				flex: 1;
+				padding: 16px 10px;
+				border-radius: var(--radius);
+				border: 1.5px solid var(--gold-dim);
+				background: #1c1c14;
+				color: var(--gold);
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.75rem;
+				font-weight: 600;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				cursor: pointer;
+				transition:
+					border-color 0.15s,
+					background 0.15s,
+					transform 0.1s;
+			}
+			.btn-primary:hover {
+				border-color: var(--gold);
+				background: #232310;
+				transform: translateY(-2px);
+			}
+			.btn-primary:active {
+				transform: translateY(0) scale(0.97);
+			}
+			.btn-primary:disabled {
+				opacity: 0.35;
+				cursor: default;
+				transform: none;
+			}
+
+			.btn-secondary {
+				flex: 1;
+				padding: 16px 10px;
+				border-radius: var(--radius);
+				border: 1.5px solid var(--border);
+				background: transparent;
+				color: var(--text-dim);
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.75rem;
+				font-weight: 600;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				cursor: pointer;
+				transition:
+					border-color 0.15s,
+					color 0.15s,
+					transform 0.1s;
+			}
+			.btn-secondary:hover {
+				border-color: var(--text-dim);
+				color: var(--cream);
+				transform: translateY(-2px);
+			}
+			.btn-secondary:active {
+				transform: translateY(0) scale(0.97);
+			}
+
+			/* Stats */
+			.stats-bar {
+				width: 100%;
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 10px;
+			}
+			.stat-cell {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				padding: 12px 10px;
+				text-align: center;
+			}
+			.stat-cell .val {
+				font-family: "Playfair Display", serif;
+				font-size: 1.3rem;
+				font-weight: 700;
+				line-height: 1;
+			}
+			.stat-cell .lbl {
+				font-size: 0.55rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--text-dim);
+				margin-top: 5px;
+			}
+			.stat-seen .val {
+				color: var(--cream);
+			}
+			.stat-rev .val {
+				color: var(--gold);
+			}
+			.stat-skip .val {
+				color: var(--text-dim);
+			}
+
+			.accuracy-row {
+				width: 100%;
+				height: 3px;
+				background: var(--border);
+				border-radius: 2px;
+				overflow: hidden;
+			}
+			.accuracy-fill {
+				height: 100%;
+				background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+				border-radius: 2px;
+				transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+			}
+
+			.btn-reset {
+				background: transparent;
+				border: 1px solid var(--border);
+				color: var(--text-dim);
+				border-radius: 6px;
+				padding: 8px 20px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.62rem;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				cursor: pointer;
+				transition:
+					border-color 0.15s,
+					color 0.15s;
+			}
+			.btn-reset:hover {
+				border-color: var(--text-dim);
+				color: var(--cream);
+			}
+
+			.tactic-index {
+				position: absolute;
+				top: 14px;
+				right: 16px;
+				font-size: 0.58rem;
+				color: var(--text-dim);
+				letter-spacing: 0.1em;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrapper">
+			<header>
+				<h1>Blind<span>fold</span></h1>
+				<p>Tactics trainer</p>
+			</header>
+
+			<div class="progress-row">
+				<span class="progress-label">Progress</span>
+				<span class="progress-count" id="progressCount">— / —</span>
+			</div>
+
+			<div class="tactic-card" id="tacticCard">
+				<span class="tactic-index" id="tacticIndex">#—</span>
+
+				<div>
+					<div class="card-section-label">Position — find the win</div>
+					<div class="piece-grid" id="pieceGrid"></div>
+				</div>
+
+				<div class="divider"></div>
+
+				<div class="answer-section">
+					<div class="card-section-label">Best continuation</div>
+					<div class="move-sequence" id="moveSequence">
+						<span class="hidden-placeholder"
+							>Press "Show answer" to reveal</span
+						>
+					</div>
+				</div>
+
+				<div class="btn-row">
+					<button class="btn-primary" id="btnShow" onclick="showAnswer()">
+						Show answer
+					</button>
+					<button class="btn-secondary" onclick="nextTactic()">Next →</button>
+				</div>
+			</div>
+
+			<div class="stats-bar">
+				<div class="stat-cell stat-seen">
+					<div class="val" id="statSeen">0</div>
+					<div class="lbl">Seen</div>
+				</div>
+				<div class="stat-cell stat-rev">
+					<div class="val" id="statRevealed">0</div>
+					<div class="lbl">Revealed</div>
+				</div>
+				<div class="stat-cell stat-skip">
+					<div class="val" id="statSkipped">0</div>
+					<div class="lbl">Skipped</div>
+				</div>
+			</div>
+
+			<div class="accuracy-row">
+				<div class="accuracy-fill" id="accuracyFill" style="width: 0%"></div>
+			</div>
+
+			<button class="btn-reset" onclick="resetSession()">
+				↺ Reset session
+			</button>
+		</div>
+		<script>
+			const RAW = `ka1,rb1,Qb4 - Qa3
+ka1,Ba3,Qb4 - Qb2
+ka1,Na3,Qb4 - Qb1
+ka1,Bb4,Qc2 - Bc3
+ka1,Kb3,Rc2 - Rc1
+ka1,pa2,pb2,Rc4 - Rc1
+ka1,pa2,pb2,rb1,Ra4,Qc4 - Qa2
+ka1,rb1,pa2,Qc1,Ba3 - Bb2
+kb1,Rc3,Qc4 - Qb3,ka1,Rc1
+kb1,Qa4,Kb4 - Qa2,kc1,Qc2
+kb1,Ba3,Qc4 - Qc1,ka2,Qb2
+ka1,Kb3,Qb4 - Qa3,kb1,Qb2
+kb1,Pb3,Pc3,Qa4,Kc4 - Qa2,kc1,Qc2
+kc1,pb2,Pb3,Pc3,Kb4,Qd4 - Qd2,k1,Qb2
+ka1,pa2,bb3,Pa3,Qb4 - Qc3,kb1,Qb2
+ka1,pa2,pb2,rd1,Qc3,Rc4 - Qc1,rxc1,Rxc1
+ka1,qb1,Qb4,Rc4 - Qa3,qa2,Rc1
+ka2,Rc3,Rd4 - Rb4,ka1,Ra3
+kb1,Ka3,Bd2,Bc4 - Bd3,ka1,Bc3
+ka1,rb1,pa2,pb2,pc3,Pa3,Qd4,Rd3 - axb2,rxb2,Rd1
+ka1,rc1,pa2,pb2,pc2,Nd2,Qa4,Rc4 - Qxa2,kxa2,Ra4
+ka1,pa2,qb1,Pa3,Qb4,Rd4 - Rd1,qxd1,Qb2
+ka1,rb1,pa2,qc3,Qa3,Rb4 - Qxc3,rb2,Qxb2
+ka2,Bb4,Qc1 - Qc2,ka1,Bc3
+kb1,pa2,pb2,pc2,qc1,Qa4,Bd3,Rd2 - Qxc2,qxc2,Rd1
+kb1,Kc4,Ra3 - Kc3,kc1,Ra1
+kc1,qb2,nc2,Qc3,Pb3,Ra4 - Ra1,qxa1,Qxc2
+kb1,bb2,pc2,qd2,Ra2,Ra4,Bd4 - Rxb2,kc1,Ra2
+ka1,pa2,pb2,nb1,Rc1,Qa4 - Rxb1,kxb1,Qd1
+ka1,Pb3,Nc3,Rb4 - b2
+ka1,pa2,pb2,rc1,Na3,Qd3 - Qb1,rxb1,Nc2
+ka1,pb2,bb1,pa3,bc3,Pb3,Bb4,Qa4 - Qxa3,bxa3,Bxc3
+kb1,rc1,pa2,pb2,Rd1,Qd4 - Qd3,ka1,Rxc1
+kb1,pa2,rb2,Nc4,Rc3 - Na3,ka1,Rc1,rb1,Rxb1
+ka1,Rc3,Qd3 - Rb3,ka2,Qb1
+ka1,rc1,bd1,pc2,rd2,Pa3,Bb4,Bc4 - Bc3,kb1,a2
+ka1,pa2,rc1,rd1,bc3,Rb4,Nd4,Qd3 - Qb1,rxb1,Nc2
+ka1,pa2,pb2,rd1,ba4,bb4,Qb3,Qc4 - Qxd1,bxd1,Rc1
+kb1,pa2,pc2,qc1,Qc4,Rd4 - Qb4,ka1,Qc3,kb1,rb4,qb2,Qxb2`;
+
+			// Unicode chess symbols: White = hollow (♔♕♖♗♘♙), Black = filled (♚♛♜♝♞♟)
+			const WHITE_SYM = { K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙" };
+			const BLACK_SYM = { K: "♚", Q: "♛", R: "♜", B: "♝", N: "♞", P: "♟" };
+
+			function parseTactics(raw) {
+				return raw
+					.trim()
+					.split("\n")
+					.map((line, i) => {
+						const [pos, ans] = line.split(" - ");
+						return {
+							id: i + 1,
+							pieces: pos
+								.trim()
+								.split(",")
+								.map((p) => p.trim()),
+							moves: ans
+								.trim()
+								.split(",")
+								.map((m) => m.trim()),
+						};
+					});
+			}
+
+			function pieceIsWhite(p) {
+				return /[A-Z]/.test(p[0]);
+			}
+
+			function makePieceChip(p) {
+				const isWhite = pieceIsWhite(p);
+				const letter = p[0].toUpperCase();
+				const square = p.slice(1);
+				const symbol = (isWhite ? WHITE_SYM : BLACK_SYM)[letter] || "?";
+				const chip = document.createElement("span");
+				chip.className =
+					"piece-chip " + (isWhite ? "white-piece" : "black-piece");
+				chip.innerHTML =
+					`<span class="piece-symbol">${symbol}</span>` +
+					`<span class="piece-square">${square}</span>`;
+				return chip;
+			}
+
+			const TACTICS = parseTactics(RAW);
+			let queue = [],
+				queuePos = 0,
+				current = null,
+				revealed = false;
+			let statSeen = 0,
+				statRevealed = 0,
+				statSkipped = 0;
+
+			function shuffle(arr) {
+				for (let i = arr.length - 1; i > 0; i--) {
+					const j = Math.floor(Math.random() * (i + 1));
+					[arr[i], arr[j]] = [arr[j], arr[i]];
+				}
+				return arr;
+			}
+
+			function buildQueue() {
+				queue = shuffle([...Array(TACTICS.length).keys()]);
+				queuePos = 0;
+			}
+
+			function renderTactic(t) {
+				document.getElementById("tacticIndex").textContent = "#" + t.id;
+				document.getElementById("progressCount").textContent =
+					queuePos + " / " + TACTICS.length;
+
+				const grid = document.getElementById("pieceGrid");
+				grid.innerHTML = "";
+				t.pieces.forEach((p) => grid.appendChild(makePieceChip(p)));
+
+				const seq = document.getElementById("moveSequence");
+				seq.innerHTML =
+					'<span class="hidden-placeholder">Press "Show answer" to reveal</span>';
+
+				document.getElementById("btnShow").disabled = false;
+				revealed = false;
+			}
+
+			function showAnswer() {
+				if (revealed) return;
+				revealed = true;
+				statRevealed++;
+				updateStats();
+
+				const seq = document.getElementById("moveSequence");
+				seq.innerHTML = "";
+				current.moves.forEach((m) => {
+					const chip = document.createElement("span");
+					chip.className = "move-chip";
+					chip.textContent = m;
+					seq.appendChild(chip);
+					requestAnimationFrame(() =>
+						requestAnimationFrame(() => chip.classList.add("revealed")),
+					);
+				});
+				document.getElementById("btnShow").disabled = true;
+			}
+
+			function nextTactic() {
+				if (current && !revealed) {
+					statSkipped++;
+					updateStats();
+				}
+				if (queuePos >= queue.length) buildQueue();
+				current = TACTICS[queue[queuePos++]];
+				statSeen++;
+				updateStats();
+				renderTactic(current);
+			}
+
+			function updateStats() {
+				document.getElementById("statSeen").textContent = statSeen;
+				document.getElementById("statRevealed").textContent = statRevealed;
+				document.getElementById("statSkipped").textContent = statSkipped;
+				document.getElementById("accuracyFill").style.width =
+					(statSeen > 0 ? (statRevealed / statSeen) * 100 : 0) + "%";
+				document.getElementById("progressCount").textContent =
+					queuePos + " / " + TACTICS.length;
+			}
+
+			function resetSession() {
+				statSeen = 0;
+				statRevealed = 0;
+				statSkipped = 0;
+				buildQueue();
+				current = null;
+				nextTactic();
+			}
+
+			document.addEventListener("keydown", (e) => {
+				if (e.key === " " || e.key === "Enter") {
+					e.preventDefault();
+					if (!revealed) showAnswer();
+					else nextTactic();
+				}
+				if (e.key === "ArrowRight") nextTactic();
+			});
+
+			buildQueue();
+			nextTactic();
+		</script>
+	</body>
+</html>
