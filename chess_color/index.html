@@ -30,6 +30,8 @@
 				box-sizing: border-box;
 				margin: 0;
 				padding: 0;
+				user-select: none;
+				-webkit-user-select: none;
 			}
 
 			body {
@@ -536,9 +538,13 @@
 			}
 
 			function pickSquare() {
-				const file = Math.floor(Math.random() * boardSize) + 1;
-				const rank = Math.floor(Math.random() * boardSize) + 1;
-				return { file, rank, label: fileLabel(file) + rank };
+				let file, rank, label;
+				do {
+					file = Math.floor(Math.random() * boardSize) + 1;
+					rank = Math.floor(Math.random() * boardSize) + 1;
+					label = fileLabel(file) + rank;
+				} while (boardSize > 1 && currentSq && label === currentSq.label);
+				return { file, rank, label };
 			}
 
 			// ─── Z-score colour for last time ────────────────
