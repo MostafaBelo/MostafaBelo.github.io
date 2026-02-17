@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Blindfold Chess — Square Colour</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--bg: #0d0f0e;
+				--surface: #151815;
+				--border: #2a2e2a;
+				--cream: #e8e0cc;
+				--gold: #c9a84c;
+				--gold-dim: #7a6230;
+				--white-sq: #f0d9b5;
+				--black-sq: #b58863;
+				--correct: #4caf70;
+				--wrong: #cf4a3c;
+				--text-dim: #6b7268;
+				--radius: 10px;
+			}
+
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				background: var(--bg);
+				color: var(--cream);
+				font-family: "JetBrains Mono", monospace;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: flex-start;
+				padding: 32px 16px 48px;
+				overflow-x: hidden;
+			}
+
+			/* ─── subtle board-pattern background ─── */
+			body::before {
+				content: "";
+				position: fixed;
+				inset: 0;
+				background-image: repeating-conic-gradient(
+					#1a1d1a 0% 25%,
+					#0d0f0e 0% 50%
+				);
+				background-size: 48px 48px;
+				opacity: 0.35;
+				pointer-events: none;
+				z-index: 0;
+			}
+
+			.wrapper {
+				position: relative;
+				z-index: 1;
+				width: 100%;
+				max-width: 480px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 28px;
+			}
+
+			/* ─── Header ─── */
+			header {
+				text-align: center;
+			}
+			header h1 {
+				font-family: "Playfair Display", serif;
+				font-size: clamp(1.6rem, 5vw, 2.2rem);
+				font-weight: 900;
+				letter-spacing: 0.04em;
+				color: var(--cream);
+				line-height: 1;
+			}
+			header h1 span {
+				color: var(--gold);
+			}
+			header p {
+				margin-top: 6px;
+				font-size: 0.7rem;
+				color: var(--text-dim);
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+			}
+
+			/* ─── Board size slider ─── */
+			.slider-section {
+				width: 100%;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				padding: 18px 20px;
+			}
+			.slider-label {
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				margin-bottom: 12px;
+			}
+			.slider-label span {
+				font-size: 0.68rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--text-dim);
+			}
+			.slider-label strong {
+				font-size: 1.1rem;
+				color: var(--gold);
+			}
+			input[type="range"] {
+				-webkit-appearance: none;
+				appearance: none;
+				width: 100%;
+				height: 4px;
+				background: var(--border);
+				border-radius: 2px;
+				outline: none;
+				cursor: pointer;
+			}
+			input[type="range"]::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				width: 18px;
+				height: 18px;
+				border-radius: 50%;
+				background: var(--gold);
+				border: 2px solid var(--bg);
+				box-shadow: 0 0 0 2px var(--gold-dim);
+				transition: transform 0.1s;
+			}
+			input[type="range"]::-webkit-slider-thumb:active {
+				transform: scale(1.25);
+			}
+			.tick-row {
+				display: flex;
+				justify-content: space-between;
+				margin-top: 8px;
+			}
+			.tick-row span {
+				font-size: 0.6rem;
+				color: var(--text-dim);
+				width: 16px;
+				text-align: center;
+			}
+			.tick-row span.active {
+				color: var(--gold);
+				font-weight: 600;
+			}
+
+			/* ─── Main question card ─── */
+			.question-card {
+				width: 100%;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				padding: 36px 24px 32px;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 28px;
+				position: relative;
+				overflow: hidden;
+			}
+
+			/* flash overlay */
+			.flash-overlay {
+				position: absolute;
+				inset: 0;
+				border-radius: var(--radius);
+				pointer-events: none;
+				opacity: 0;
+				transition: opacity 0s;
+			}
+			.flash-overlay.flash-correct {
+				background: rgba(76, 175, 112, 0.18);
+				animation: flashAnim 0.7s ease-out forwards;
+			}
+			.flash-overlay.flash-wrong {
+				background: rgba(207, 74, 60, 0.18);
+				animation: flashAnim 0.7s ease-out forwards;
+			}
+			@keyframes flashAnim {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+
+			/* feedback pip */
+			.feedback-pip {
+				position: absolute;
+				top: 14px;
+				right: 16px;
+				font-size: 0.62rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				font-weight: 600;
+				opacity: 0;
+				transition: opacity 0.1s;
+			}
+			.feedback-pip.show-correct {
+				color: var(--correct);
+				animation: pipAnim 0.8s ease-out forwards;
+			}
+			.feedback-pip.show-wrong {
+				color: var(--wrong);
+				animation: pipAnim 0.8s ease-out forwards;
+			}
+			@keyframes pipAnim {
+				0% {
+					opacity: 1;
+					transform: translateY(0);
+				}
+				60% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+					transform: translateY(-8px);
+				}
+			}
+
+			/* square name */
+			.square-name {
+				font-family: "Playfair Display", serif;
+				font-size: clamp(4rem, 18vw, 6rem);
+				font-weight: 900;
+				letter-spacing: -0.02em;
+				color: var(--cream);
+				line-height: 1;
+				position: relative;
+			}
+			.square-name::after {
+				content: "";
+				position: absolute;
+				bottom: -6px;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 60px;
+				height: 2px;
+				background: var(--gold-dim);
+				border-radius: 1px;
+			}
+
+			/* answer buttons */
+			.btn-row {
+				display: flex;
+				gap: 14px;
+				width: 100%;
+			}
+			.btn-answer {
+				flex: 1;
+				padding: 18px 10px;
+				border: 1.5px solid var(--border);
+				border-radius: var(--radius);
+				cursor: pointer;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.78rem;
+				font-weight: 600;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				transition:
+					transform 0.1s,
+					box-shadow 0.15s,
+					border-color 0.15s;
+				position: relative;
+				overflow: hidden;
+			}
+			.btn-answer::before {
+				content: "";
+				position: absolute;
+				inset: 0;
+				opacity: 0.07;
+			}
+			.btn-white {
+				background: #1e2120;
+				color: var(--white-sq);
+				border-color: #383d38;
+			}
+			.btn-white::before {
+				background: var(--white-sq);
+			}
+			.btn-white:hover {
+				border-color: var(--white-sq);
+				box-shadow: 0 0 0 1px var(--white-sq) inset;
+				transform: translateY(-2px);
+			}
+
+			.btn-black {
+				background: #1a1c1a;
+				color: var(--black-sq);
+				border-color: #312c28;
+			}
+			.btn-black::before {
+				background: var(--black-sq);
+			}
+			.btn-black:hover {
+				border-color: var(--black-sq);
+				box-shadow: 0 0 0 1px var(--black-sq) inset;
+				transform: translateY(-2px);
+			}
+
+			.btn-answer:active {
+				transform: translateY(0) scale(0.97);
+			}
+
+			/* colour swatch dot */
+			.btn-answer .dot {
+				display: inline-block;
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				margin-right: 8px;
+				vertical-align: middle;
+			}
+			.btn-white .dot {
+				background: var(--white-sq);
+			}
+			.btn-black .dot {
+				background: var(--black-sq);
+			}
+
+			/* ─── Stats bar ─── */
+			.stats-bar {
+				width: 100%;
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr 1fr;
+				gap: 10px;
+			}
+			.stat-cell {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				padding: 12px 10px;
+				text-align: center;
+			}
+			.stat-cell .val {
+				font-family: "Playfair Display", serif;
+				font-size: 1.3rem;
+				font-weight: 700;
+				line-height: 1;
+			}
+			.stat-cell .lbl {
+				font-size: 0.55rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--text-dim);
+				margin-top: 5px;
+			}
+			.stat-total .val {
+				color: var(--cream);
+			}
+			.stat-right .val {
+				color: var(--correct);
+			}
+			.stat-last .val {
+				color: var(--cream);
+			} /* dynamic */
+			.stat-avg .val {
+				color: var(--gold);
+			}
+
+			/* accuracy bar */
+			.accuracy-row {
+				width: 100%;
+				height: 3px;
+				background: var(--border);
+				border-radius: 2px;
+				overflow: hidden;
+			}
+			.accuracy-fill {
+				height: 100%;
+				background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+				border-radius: 2px;
+				transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+			}
+
+			/* ─── Reset button ─── */
+			.btn-reset {
+				background: transparent;
+				border: 1px solid var(--border);
+				color: var(--text-dim);
+				border-radius: 6px;
+				padding: 8px 20px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.62rem;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				cursor: pointer;
+				transition:
+					border-color 0.15s,
+					color 0.15s;
+			}
+			.btn-reset:hover {
+				border-color: var(--text-dim);
+				color: var(--cream);
+			}
+
+			/* ─── Correct/wrong pulse on square name ─── */
+			.square-name.pulse-correct {
+				animation: namePulseCorrect 0.3s ease-out;
+			}
+			.square-name.pulse-wrong {
+				animation: namePulseWrong 0.3s ease-out;
+			}
+			@keyframes namePulseCorrect {
+				0% {
+					text-shadow: 0 0 0 rgba(76, 175, 112, 0);
+				}
+				50% {
+					text-shadow: 0 0 28px rgba(76, 175, 112, 0.6);
+				}
+				100% {
+					text-shadow: 0 0 0 rgba(76, 175, 112, 0);
+				}
+			}
+			@keyframes namePulseWrong {
+				0% {
+					text-shadow: 0 0 0 rgba(207, 74, 60, 0);
+				}
+				50% {
+					text-shadow: 0 0 28px rgba(207, 74, 60, 0.6);
+				}
+				100% {
+					text-shadow: 0 0 0 rgba(207, 74, 60, 0);
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrapper">
+			<header>
+				<h1>Blind<span>fold</span></h1>
+				<p>Square colour recognition</p>
+			</header>
+
+			<!-- Board size slider -->
+			<div class="slider-section">
+				<div class="slider-label">
+					<span>Board size</span>
+					<strong id="sizeDisplay">8×8</strong>
+				</div>
+				<input
+					type="range"
+					id="boardSlider"
+					min="1"
+					max="8"
+					value="8"
+					step="1"
+				/>
+				<div class="tick-row" id="tickRow"></div>
+			</div>
+
+			<!-- Question card -->
+			<div class="question-card" id="questionCard">
+				<div class="flash-overlay" id="flashOverlay"></div>
+				<div class="feedback-pip" id="feedbackPip"></div>
+				<div class="square-name" id="squareName">—</div>
+				<div class="btn-row">
+					<button
+						class="btn-answer btn-white"
+						id="btnWhite"
+						onclick="answer('white')"
+					>
+						<span class="dot"></span>White
+					</button>
+					<button
+						class="btn-answer btn-black"
+						id="btnBlack"
+						onclick="answer('black')"
+					>
+						<span class="dot"></span>Black
+					</button>
+				</div>
+			</div>
+
+			<!-- Stats -->
+			<div class="stats-bar">
+				<div class="stat-cell stat-total">
+					<div class="val" id="statTotal">0</div>
+					<div class="lbl">Total</div>
+				</div>
+				<div class="stat-cell stat-right">
+					<div class="val" id="statRight">0</div>
+					<div class="lbl">Correct</div>
+				</div>
+				<div class="stat-cell stat-last">
+					<div class="val" id="statLast">—</div>
+					<div class="lbl">Last (s)</div>
+				</div>
+				<div class="stat-cell stat-avg">
+					<div class="val" id="statAvg">—</div>
+					<div class="lbl">Avg (s)</div>
+				</div>
+			</div>
+
+			<div class="accuracy-row">
+				<div class="accuracy-fill" id="accuracyFill" style="width: 0%"></div>
+			</div>
+
+			<button class="btn-reset" onclick="resetSession()">
+				↺ Reset session
+			</button>
+		</div>
+
+		<script>
+			// ─── State ───────────────────────────────────────
+			let boardSize = 8;
+			let currentSq = null;
+			let questionStart = null;
+			let totalQ = 0;
+			let correctQ = 0;
+			let times = []; // time in ms for each answered question
+
+			// ─── Helpers ─────────────────────────────────────
+			function squareColour(file, rank) {
+				// file: 1-8 (a=1), rank: 1-8
+				// a1 is dark. (file + rank) even => dark, odd => light
+				return (file + rank) % 2 === 0 ? "black" : "white";
+			}
+
+			function fileLabel(n) {
+				return String.fromCharCode(96 + n); // 1→a, 2→b …
+			}
+
+			function pickSquare() {
+				const file = Math.floor(Math.random() * boardSize) + 1;
+				const rank = Math.floor(Math.random() * boardSize) + 1;
+				return { file, rank, label: fileLabel(file) + rank };
+			}
+
+			// ─── Z-score colour for last time ────────────────
+			function lastTimeColour(lastMs) {
+				if (times.length < 2) return "var(--cream)";
+				const mean = times.reduce((a, b) => a + b, 0) / times.length;
+				const std = Math.sqrt(
+					times.reduce((a, b) => a + (b - mean) ** 2, 0) / times.length,
+				);
+				if (std === 0) return "var(--correct)";
+				const z = (lastMs - mean) / std;
+				return z > 1 ? "var(--wrong)" : "var(--correct)";
+			}
+
+			// ─── UI update ───────────────────────────────────
+			function updateStats() {
+				document.getElementById("statTotal").textContent = totalQ;
+				document.getElementById("statRight").textContent = correctQ;
+
+				if (times.length > 0) {
+					const last = times[times.length - 1];
+					const avg = times.reduce((a, b) => a + b, 0) / times.length;
+					const lastEl = document.getElementById("statLast");
+					lastEl.textContent = (last / 1000).toFixed(2);
+					lastEl.style.color = lastTimeColour(last);
+					document.getElementById("statAvg").textContent = (avg / 1000).toFixed(
+						2,
+					);
+				}
+
+				const pct = totalQ > 0 ? (correctQ / totalQ) * 100 : 0;
+				document.getElementById("accuracyFill").style.width = pct + "%";
+			}
+
+			function nextQuestion() {
+				currentSq = pickSquare();
+				questionStart = performance.now();
+				const el = document.getElementById("squareName");
+				el.textContent = currentSq.label;
+				el.classList.remove("pulse-correct", "pulse-wrong");
+			}
+
+			// ─── Answer handler ──────────────────────────────
+			function answer(choice) {
+				if (!currentSq) return;
+
+				const elapsed = performance.now() - questionStart;
+				const correct = squareColour(currentSq.file, currentSq.rank) === choice;
+
+				totalQ++;
+				if (correct) correctQ++;
+				times.push(elapsed);
+
+				// Feedback
+				const overlay = document.getElementById("flashOverlay");
+				const pip = document.getElementById("feedbackPip");
+				const nameEl = document.getElementById("squareName");
+
+				// Remove old animation classes
+				overlay.className = "flash-overlay";
+				pip.className = "feedback-pip";
+				nameEl.classList.remove("pulse-correct", "pulse-wrong");
+
+				// Force reflow to restart animations
+				void overlay.offsetWidth;
+				void pip.offsetWidth;
+				void nameEl.offsetWidth;
+
+				if (correct) {
+					overlay.classList.add("flash-correct");
+					pip.textContent = "✓ Correct";
+					pip.classList.add("show-correct");
+					nameEl.classList.add("pulse-correct");
+				} else {
+					overlay.classList.add("flash-wrong");
+					pip.textContent = "✗ Wrong";
+					pip.classList.add("show-wrong");
+					nameEl.classList.add("pulse-wrong");
+				}
+
+				updateStats();
+
+				// Immediately show next question — feedback fades in background
+				nextQuestion();
+			}
+
+			// ─── Reset ───────────────────────────────────────
+			function resetSession() {
+				totalQ = 0;
+				correctQ = 0;
+				times = [];
+				document.getElementById("statTotal").textContent = "0";
+				document.getElementById("statRight").textContent = "0";
+				document.getElementById("statLast").textContent = "—";
+				document.getElementById("statLast").style.color = "var(--cream)";
+				document.getElementById("statAvg").textContent = "—";
+				document.getElementById("accuracyFill").style.width = "0%";
+				nextQuestion();
+			}
+
+			// ─── Slider ──────────────────────────────────────
+			const slider = document.getElementById("boardSlider");
+			const sizeDisplay = document.getElementById("sizeDisplay");
+			const tickRow = document.getElementById("tickRow");
+
+			function buildTicks(active) {
+				tickRow.innerHTML = "";
+				for (let i = 1; i <= 8; i++) {
+					const s = document.createElement("span");
+					s.textContent = i;
+					if (i === active) s.className = "active";
+					tickRow.appendChild(s);
+				}
+			}
+
+			slider.addEventListener("input", () => {
+				boardSize = parseInt(slider.value);
+				sizeDisplay.textContent = boardSize + "×" + boardSize;
+				buildTicks(boardSize);
+				resetSession();
+			});
+
+			// ─── Keyboard shortcuts ──────────────────────────
+			document.addEventListener("keydown", (e) => {
+				if (e.key === "ArrowLeft" || e.key.toLowerCase() === "w")
+					answer("white");
+				if (e.key === "ArrowRight" || e.key.toLowerCase() === "b")
+					answer("black");
+			});
+
+			// ─── Init ─────────────────────────────────────────
+			buildTicks(8);
+			nextQuestion();
+		</script>
+	</body>
+</html>
